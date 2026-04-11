@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다이어트 챌린지 프로 - 통합 기록 강화형</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #FF9A8B;
+            --primary-light: #FFD1CA;
+            --secondary: #6EDCD9;
+            --secondary-light: #C2F0EE;
+            --bg: #FEF9F3;
+            --text: #5D4037;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px; margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .main-wrapper { max-width: 1200px; margin: 0 auto; }
+
+        .global-dashboard {
+            background: var(--white);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 3px solid var(--primary-light);
+            box-shadow: 0 10px 30px rgba(255, 154, 139, 0.1);
+        }
+
+        .summary-stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px; margin-bottom: 25px;
+        }
+
+        .stat-card { background: var(--bg); padding: 12px; border-radius: 20px; text-align: center; }
+        .stat-card h4 { margin: 0; font-size: 11px; color: #888; }
+        .stat-card p { margin: 5px 0 0; font-size: 16px; font-weight: bold; color: var(--primary); }
+
+        .dashboard-table-area { overflow-x: auto; margin-bottom: 30px; }
+
+        .card {
+            background: var(--white); border-radius: 25px; padding: 22px; margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.03); border: 2px solid #f0f0f0;
+        }
+
+        h2 { margin: 0 0 15px 0; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        th, td { text-align: center; padding: 12px 10px; border-bottom: 1px solid #f9f9f9; }
+        th { color: #888; font-weight: normal; background: #fafafa; }
+        
+        input, select, textarea { padding: 8px; border-radius: 10px; border: 2px solid #eee; outline: none; font-size: 13px; }
+        button { cursor: pointer; border: none; font-weight: bold; border-radius: 12px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; padding: 10px; }
+        .btn-mint { background: var(--secondary); color: white; padding: 8px 15px; }
+
+        .meal-row, .workout-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .row-label { width: 50px; font-size: 12px; font-weight: bold; color: #888; }
+
+        .chart-container-wide { position: relative; height: 350px; width: 100%; margin-top: 10px; }
+        
+        .fridge-item { border-bottom: 1px solid #eee; padding: 10px 0; font-size: 12px; }
+        .fridge-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .fridge-comments { margin-top: 5px; color: #666; font-style: italic; background: #fdfdfd; padding: 5px; border-radius: 8px; }
+
+        .personal-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
+        @media (max-width: 900px) { .personal-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="global-dashboard">
+        <h2 style="color:var(--primary)">🏆 챌린지 통합 진행 현황</h2>
+        <div class="summary-stats">
+            <div class="stat-card"><h4>참여 멤버</h4><p id="statCount">0명</p></div>
+            <div class="stat-card"><h4>평균 진행률</h4><p id="statAvgProgress">0%</p></div>
+            <div class="stat-card"><h4>팀 총 감량</h4><p id="statTotalLoss">0kg</p></div>
+        </div>
+        <div class="dashboard-table-area">
+            <table>
+                <thead>
+                    <tr><th>멤버</th><th>시작 체중</th><th>현재</th><th>목표</th><th>진행도</th><th>응원/질타</th></tr>
+                </thead>
+                <tbody id="totalStatusList"></tbody>
+            </table>
+        </div>
+        <div class="chart-container-wide">
+            <canvas id="adminChart"></canvas>
+        </div>
+    </div>
+
+    <div class="personal-area">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>👤 개인 목표 및 기록 관리</h2>
+            <select id="userSelect" onchange="renderAll()" style="border: 2px solid var(--primary); font-weight:bold;"></select>
+        </div>
+
+        <div class="personal-grid">
+            <div class="card">
+                <h2>🎯 오늘의 체중 & 식단 (뱃지)</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: #fffaf0; padding: 15px; border-radius: 20px;">
+                    <input type="date" id="recordDate" style="flex:1">
+                    <input type="number" id="recordWeight" step="0.1" placeholder="체중(kg)" style="flex:1">
+                    <button class="btn-primary" onclick="saveWeight()">체중 저장</button>
+                </div>
+
+                <div class="meal-input-group">
+                    <div class="meal-row"><span class="row-label">아침</span><input type="text" id="mealBreak" style="flex:1" placeholder="아침 메뉴"><select id="badgeBreak"><option value="😇">😇 갓생</option><option value="✅">✅ 클린</option><option value="🤨">🤨 무난</option><option value="🍕">🍕 치팅</option><option value="🚨">🚨 폭주</option></select></div>
+                    <div class="meal-row"><span class="row-label">점심</span><input type="text" id="mealLunch" style="flex:1" placeholder="점심 메뉴"><select id="badgeLunch"><option value="😇">😇 갓생</option><option value="✅">✅ 클린</option><option value="🤨">🤨 무난</option><option value="🍕">🍕 치팅</option><option value="🚨">🚨 폭주</option></select></div>
+                    <div class="meal-row"><span class="row-label">저녁</span><input type="text" id="mealDinner" style="flex:1" placeholder="저녁 메뉴"><select id="badgeDinner"><option value="😇">😇 갓생</option><option value="✅">✅ 클린</option><option value="🤨">🤨 무난</option><option value="🍕">🍕 치팅</option><option value="🚨">🚨 폭주</option></select></div>
+                </div>
+                <button class="btn-primary" style="width:100%; margin-top:5px;" onclick="saveDailyMeal()">식단 및 뱃지 확정</button>
+                
+                <hr style="margin: 20px 0; border: 0.5px solid #eee;">
+                <h2>🏃 오늘의 운동 기록</h2>
+                <div class="workout-row">
+                    <input type="text" id="workoutName" style="flex:1.5" placeholder="어떤 운동을 했나요?">
+                    <select id="workoutIntensity" style="flex:1">
+                        <option value="고강도">🔥 고강도</option>
+                        <option value="중강도">⚡ 중강도</option>
+                        <option value="저강도">🌱 저강도</option>
+                    </select>
+                    <button class="btn-mint" onclick="saveWorkout()">저장</button>
+                </div>
+                <div id="workoutList" style="font-size: 12px; color: #666;"></div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>🧊 스마트 냉장고 (구매일/추천)</h2>
+                    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+                        <input type="text" id="foodName" placeholder="식재료 이름">
+                        <div style="display: flex; gap: 5px;">
+                            <input type="date" id="foodDate" style="flex:1">
+                            <button class="btn-mint" onclick="addFood()">+</button>
+                        </div>
+                    </div>
+                    <div id="fridgeList" style="max-height: 250px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const todayStr = new Date().toISOString().split('T')[0];
+    const STORAGE_KEY = 'diet_pro_v7_6';
+    
+    let appData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+        "u1": { 
+            name: "유경균", 
+            period: { start: "2026-03-19", end: "2026-06-19" },
+            weight: { target: 62, history: [{date: "2026-03-19", w: 75}, {date: todayStr, w: 69}] }, 
+            daily: {}, fridge: [], meals: {}, workouts: {}, badges: {up:0, down:0}
+        }
+    };
+
+    let adminChartObj = null;
+
+    function renderAll() {
+        updateUserDropdown();
+        renderTopDashboard();
+        renderPersonalArea();
+        save();
+    }
+
+    function updateUserDropdown() {
+        const select = document.getElementById('userSelect');
+        const prev = select.value;
+        select.innerHTML = '';
+        Object.keys(appData).forEach(id => {
+            const opt = document.createElement('option');
+            opt.value = id; opt.textContent = appData[id].name;
+            select.appendChild(opt);
+        });
+        if (appData[prev]) select.value = prev;
+    }
+
+    function renderTopDashboard() {
+        const list = document.getElementById('totalStatusList');
+        list.innerHTML = '';
+        let totalLoss = 0, progressSum = 0;
+        const ids = Object.keys(appData);
+
+        ids.forEach(id => {
+            const d = appData[id], hist = d.weight.history;
+            const startW = hist[0].w, curW = hist[hist.length-1].w, targetW = d.weight.target;
+            const loss = (startW - curW);
+            let progress = Math.max(0, Math.min(100, (loss / (startW - targetW) * 100)));
+            totalLoss += loss; progressSum += progress;
+
+            list.innerHTML += `<tr>
+                <td><b>${d.name}</b></td><td>${startW}kg</td><td>${curW}kg</td><td>${targetW}kg</td>
+                <td><div style="background:#eee; height:8px; border-radius:4px;"><div style="background:var(--secondary); width:${progress}%; height:100%; border-radius:4px;"></div></div></td>
+                <td><button onclick="giveBadge('${id}','up')">🔥 ${d.badges?.up || 0}</button></td>
+            </tr>`;
+        });
+        document.getElementById('statCount').innerText = ids.length + '명';
+        document.getElementById('statTotalLoss').innerText = totalLoss.toFixed(1) + 'kg';
+        updateAdminChart(ids);
+    }
+
+    function renderPersonalArea() {
+        const id = document.getElementById('userSelect').value;
+        const d = appData[id];
+        document.getElementById('recordDate').value = todayStr;
+        document.getElementById('foodDate').value = todayStr;
+
+        // 식단 데이터
+        const m = d.meals?.[todayStr] || { brk: ["","😇"], lun: ["","😇"], din: ["","😇"] };
+        document.getElementById('mealBreak').value = m.brk[0]; document.getElementById('badgeBreak').value = m.brk[1];
+        
+        // 운동 기록
+        const w = d.workouts?.[todayStr] || [];
+        document.getElementById('workoutList').innerHTML = w.map(item => `• ${item.name} (${item.intensity})`).join('<br>');
+
+        // 냉장고 & 추천 코멘트
+        const fList = document.getElementById('fridgeList');
+        fList.innerHTML = (d.fridge || []).map((f, i) => `
+            <div class="fridge-item">
+                <div class="fridge-header">
+                    <span>${f.name} <small style="color:#999">(${f.date} 구매)</small></span>
+                    <button onclick="delFood(${i})" style="color:red; background:none;">×</button>
+                </div>
+                <div class="fridge-comments">
+                    💬 추천: ${f.recommend || '다른 멤버들이 추천을 남길 수 있습니다.'}
+                    <button onclick="addRecommend(${i})" style="font-size:10px; border:1px solid #ddd; border-radius:4px; padding:2px;">추천달기</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function saveWeight() {
+        const id = document.getElementById('userSelect').value;
+        const d = document.getElementById('recordDate').value, w = parseFloat(document.getElementById('recordWeight').value);
+        if(!d || isNaN(w)) return;
+        let hist = appData[id].weight.history;
+        let entry = hist.find(e => e.date === d);
+        if(entry) entry.w = w; else hist.push({date: d, w: w});
+        hist.sort((a,b) => new Date(a.date) - new Date(b.date));
+        renderAll();
+    }
+
+    function saveDailyMeal() {
+        const id = document.getElementById('userSelect').value;
+        if(!appData[id].meals) appData[id].meals = {};
+        appData[id].meals[todayStr] = {
+            brk: [document.getElementById('mealBreak').value, document.getElementById('badgeBreak').value],
+            lun: [document.getElementById('mealLunch').value, document.getElementById('badgeLunch').value],
+            din: [document.getElementById('mealDinner').value, document.getElementById('badgeDinner').value]
+        };
+        save(); alert("식단 저장 완료!");
+    }
+
+    function saveWorkout() {
+        const id = document.getElementById('userSelect').value;
+        const name = document.getElementById('workoutName').value;
+        const intensity = document.getElementById('workoutIntensity').value;
+        if(!name) return;
+        if(!appData[id].workouts) appData[id].workouts = {};
+        if(!appData[id].workouts[todayStr]) appData[id].workouts[todayStr] = [];
+        appData[id].workouts[todayStr].push({name, intensity});
+        document.getElementById('workoutName').value = '';
+        renderAll();
+    }
+
+    function addFood() {
+        const id = document.getElementById('userSelect').value;
+        const name = document.getElementById('foodName').value;
+        const date = document.getElementById('foodDate').value;
+        if(!name) return;
+        appData[id].fridge.push({name, date, recommend: ""});
+        document.getElementById('foodName').value = '';
+        renderAll();
+    }
+
+    function addRecommend(idx) {
+        const id = document.getElementById('userSelect').value;
+        const msg = prompt("이 재료로 추천하는 요리나 응원 메시지를 남겨주세요!");
+        if(msg) {
+            appData[id].fridge[idx].recommend = msg;
+            renderAll();
+        }
+    }
+
+    function updateAdminChart(ids) {
+        const ctx = document.getElementById('adminChart').getContext('2d');
+        if (adminChartObj) adminChartObj.destroy();
+        const allDates = [...new Set(Object.values(appData).flatMap(u => u.weight.history.map(h => h.date)))].sort();
+        
+        const datasets = ids.map((id, i) => {
+            const hist = appData[id].weight.history;
+            const curW = hist[hist.length-1].w, curD = hist[hist.length-1].date;
+            const color = `hsl(${(i * 360) / ids.length}, 70%, 60%)`;
+            return [
+                { label: appData[id].name, data: allDates.map(d => hist.find(h => h.date === d)?.w || null), borderColor: color, borderWidth: 3, tension: 0.3, spanGaps: true },
+                { label: '목표', data: allDates.map(d => (d === curD ? curW : (d === appData[id].period.end ? appData[id].weight.target : null))), borderColor: color, borderDash: [5, 5], spanGaps: true, pointRadius: 0 }
+            ];
+        }).flat();
+
+        adminChartObj = new Chart(ctx, {
+            type: 'line',
+            data: { labels: allDates.map(d => d.split('-').slice(1).join('/')), datasets },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    }
+
+    function delFood(i) { const id=document.getElementById('userSelect').value; appData[id].fridge.splice(i,1); renderAll(); }
+    function giveBadge(id, type) { if(!appData[id].badges) appData[id].badges = {up:0,down:0}; appData[id].badges[type]++; renderAll(); }
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
+    renderAll();
+</script>
+</body>
+</html>
