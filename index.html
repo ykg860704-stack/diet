@@ -31,6 +31,10 @@
         .fridge-comment { background: #f9f9f9; padding: 8px; border-radius: 10px; margin-top: 5px; color: #666; font-style: italic; }
         .personal-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
         .member-add-box { background: #fff5f5; padding: 15px; border-radius: 20px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 1px dashed var(--primary); }
+        /* 추가된 스타일 */
+        .history-list { max-height: 150px; overflow-y: auto; font-size: 12px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dotted #eee; }
+        .encouragement-box { background: linear-gradient(135deg, #fff0f0 0%, #fff9f3 100%); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--primary-light); }
         @media (max-width: 900px) { .personal-grid { grid-template-columns: 1fr; } .member-add-box { flex-direction: column; align-items: stretch; } }
     </style>
 </head>
@@ -80,8 +84,18 @@
                     <div style="display: flex; gap: 8px;">
                         <input type="date" id="recordDate" style="flex: 1;"><input type="number" id="recordWeight" step="0.1" placeholder="kg" style="flex: 1;"><button class="btn-primary" onclick="saveWeight()">저장</button>
                     </div>
+                    <div id="weightHistoryList" class="history-list"></div>
                 </div>
                 <div style="height:250px; margin-top:20px;"><canvas id="personalChart"></canvas></div>
+                
+                <div class="encouragement-box" style="margin-top:20px;">
+                    <h3 style="margin:0 0 10px 0; font-size:14px; color:var(--primary);">✨ 오늘의 격려 한마디</h3>
+                    <p id="motivationalMessage" style="font-size:13px; font-weight:bold; color:var(--text); margin-bottom:10px;">오늘도 충분히 잘하고 있어요!</p>
+                    <div style="display:flex; gap:5px; justify-content:center;">
+                        <button onclick="changeMessage()" style="font-size:11px; background:var(--primary-light); color:var(--text); padding:5px 10px;">새로운 응원</button>
+                        <button onclick="selfCheck()" style="font-size:11px; background:var(--secondary); color:white; padding:5px 10px;">셀프 체크</button>
+                    </div>
+                </div>
             </div>
             <div>
                 <div class="card">
@@ -95,8 +109,11 @@
                 </div>
                 <div class="card">
                     <h2>🏃 운동 상세 기록</h2>
+                    <div style="margin-bottom:10px; display:flex; gap:5px;">
+                         <input type="date" id="workoutDate" style="flex:1">
+                    </div>
                     <div class="workout-row"><input type="text" id="workoutName" style="flex:1.5" placeholder="운동 명칭"><select id="workoutLevel"><option value="고">🔥고</option><option value="중">⚡중</option><option value="저">🌱저</option></select><button class="btn-mint" onclick="addWorkout()">기록</button></div>
-                    <div id="workoutTodayList" style="font-size:12px; color:#888; margin-top:5px;"></div>
+                    <div id="workoutTodayList" style="font-size:12px; color:#888; margin-top:5px; max-height:100px; overflow-y:auto;"></div>
                 </div>
                 <div class="card">
                     <h2>🧊 냉장고 (구매일/추천)</h2>
@@ -111,11 +128,9 @@
 </div>
 
 <script>
-    // [설정] 이미지에서 확인된 정확한 실시간 데이터베이스 주소 반영
     const firebaseConfig = {
         apiKey: "AIzaSyCuPp1KormGh0pk_TLkzWEGAsId5b85ySU",
         authDomain: "diet-f7eca.firebaseapp.com",
-        // 아래 주소로 반드시 교체해야 합니다!
         databaseURL: "https://diet-f7eca-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "diet-f7eca",
         storageBucket: "diet-f7eca.firebasestorage.app",
@@ -124,14 +139,21 @@
         measurementId: "G-0M9QVX5LMM"
     };
 
-    // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const todayStr = new Date().toISOString().split('T')[0];
     let appData = {}; 
     let personalChartObj = null, adminChartObj = null;
 
-    // 실시간 리스너: Firebase 데이터 변경 시 자동 갱신
+    // 격려 메시지 데이터
+    const messages = [
+        "오늘의 숫자가 당신의 가치를 결정하지 않아요!",
+        "조금 늦어도 괜찮아요, 꾸준함이 승리합니다!",
+        "물 한 잔 마셨나요? 지금이 가장 예쁠 때입니다!",
+        "어제의 나보다 조금 더 움직인 자신을 칭찬해주세요!",
+        "당신이 포기하지 않는 한, 변화는 이미 시작되었습니다!"
+    ];
+
     db.ref('diet_challenge_v8').on('value', (snapshot) => {
         appData = snapshot.val() || {};
         updateUserDropdown();
@@ -207,13 +229,28 @@
         const id = document.getElementById('userSelect').value; if(!appData[id]) return; const d = appData[id];
         document.getElementById('startDate').value = d.period?.start || ""; document.getElementById('endDate').value = d.period?.end || "";
         document.getElementById('targetWeight').value = d.weight?.target || 0; document.getElementById('recordDate').value = todayStr;
+        document.getElementById('workoutDate').value = todayStr; // [2번] 기본 운동날짜 설정
+        
         const m = d.meals?.[todayStr] || { brk: ["","😇(갓생)"], lun: ["","✅(클린)"], din: ["","🤨(무난)"] };
         document.getElementById('mealBreak').value = m.brk[0]; document.getElementById('badgeBreak').value = m.brk[1];
         document.getElementById('mealLunch').value = m.lun[0]; document.getElementById('badgeLunch').value = m.lun[1];
         document.getElementById('mealDinner').value = m.din[0]; document.getElementById('badgeDinner').value = m.din[1];
-        const wks = d.workouts?.[todayStr] || [];
-        document.getElementById('workoutTodayList').innerHTML = wks.map(w => `• ${w.name} (${w.level})`).join('<br>');
+        
+        // [2번] 모든 운동 기록 렌더링 (최신순)
+        const wksMap = d.workouts || {};
+        let allWks = [];
+        Object.keys(wksMap).forEach(date => {
+            wksMap[date].forEach((w, i) => allWks.push({ ...w, date, idx: i }));
+        });
+        allWks.sort((a,b) => new Date(b.date) - new Date(a.date));
+        document.getElementById('workoutTodayList').innerHTML = allWks.map(w => `<div class="history-item"><span>[${w.date}] ${w.name} (${w.level})</span> <span onclick="delWorkout('${w.date}', ${w.idx})" style="color:red;cursor:pointer;">×</span></div>`).join('');
+        
         document.getElementById('fridgeList').innerHTML = (d.fridge || []).map((f, i) => `<div class="fridge-item"><div style="display:flex; justify-content:space-between;"><span>${f.name} (${f.date})</span><span onclick="delFood(${i})" style="color:red;cursor:pointer;">×</span></div><div class="fridge-comment">💬: ${f.comment || '추천 대기중'} <button onclick="addComment(${i})" style="font-size:10px;">코멘트</button></div></div>`).join('');
+        
+        // [3번] 체중 기록 리스트 렌더링
+        const hist = d.weight?.history || [];
+        document.getElementById('weightHistoryList').innerHTML = [...hist].reverse().map((h, i) => `<div class="history-item"><span>${h.date}: ${h.w}kg</span> <span onclick="delWeight(${hist.length - 1 - i})" style="color:red;cursor:pointer;">삭제</span></div>`).join('');
+        
         updatePersonalChart(d);
     }
 
@@ -231,6 +268,17 @@
         let entry = hist.find(e => e.date === d); if(entry) entry.w = w; else hist.push({date: d, w: w});
         hist.sort((a,b) => new Date(a.date) - new Date(b.date));
         db.ref(`diet_challenge_v8/${id}/weight/history`).set(hist);
+    }
+
+    // [3번] 체중 기록 삭제 기능
+    function delWeight(idx) {
+        const id = document.getElementById('userSelect').value;
+        let hist = appData[id].weight.history;
+        if(hist.length <= 1) { alert("최소 1개의 기록은 있어야 합니다."); return; }
+        if(confirm("이 체중 기록을 삭제할까요?")) {
+            hist.splice(idx, 1);
+            db.ref(`diet_challenge_v8/${id}/weight/history`).set(hist);
+        }
     }
     
     function updatePeriod() {
@@ -251,11 +299,20 @@
 
     function addWorkout() {
         const id = document.getElementById('userSelect').value;
-        const name = document.getElementById('workoutName').value, level = document.getElementById('workoutLevel').value;
-        if(!name) return;
-        let wks = appData[id].workouts?.[todayStr] || []; wks.push({ name, level });
-        db.ref(`diet_challenge_v8/${id}/workouts/${todayStr}`).set(wks);
+        const name = document.getElementById('workoutName').value, level = document.getElementById('workoutLevel').value, date = document.getElementById('workoutDate').value;
+        if(!name || !date) return;
+        let wks = appData[id].workouts?.[date] || []; wks.push({ name, level });
+        db.ref(`diet_challenge_v8/${id}/workouts/${date}`).set(wks);
         document.getElementById('workoutName').value = '';
+    }
+
+    // [2번/3번] 운동 기록 삭제
+    function delWorkout(date, idx) {
+        const id = document.getElementById('userSelect').value;
+        let wks = appData[id].workouts[date];
+        wks.splice(idx, 1);
+        if(wks.length === 0) db.ref(`diet_challenge_v8/${id}/workouts/${date}`).remove();
+        else db.ref(`diet_challenge_v8/${id}/workouts/${date}`).set(wks);
     }
 
     function addFood() {
@@ -280,8 +337,17 @@
     function giveBadge(id) {
         db.ref(`diet_challenge_v8/${id}/badges/up`).transaction(c => (c || 0) + 1);
     }
+
+    // [1번] 추가 기능 함수
+    function changeMessage() {
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        document.getElementById('motivationalMessage').innerText = randomMsg;
+    }
+
+    function selfCheck() {
+        const checks = ["오늘 물 2L 마셨나요?", "단백질을 챙겨 먹었나요?", "충분한 수면을 취했나요?", "7000보 이상 걸었나요?"];
+        alert("✔️ 셀프 체크리스트:\n\n" + checks.join("\n"));
+    }
 </script>
 </body>
 </html>
-
-수정
