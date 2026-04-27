@@ -1,64 +1,331 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>우리집 냉장고</title>
-<style>
-body{font-family:Arial,sans-serif;margin:0;background:#eef6f8;color:#222}header{padding:16px;text-align:center;background:#7dd3fc;color:#033}h1{margin:0}.wrap{max-width:900px;margin:auto;padding:20px}.fridge{width:260px;margin:20px auto;border:4px solid #999;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 8px 18px rgba(0,0,0,.12)}.door{height:220px;border-bottom:2px solid #ddd;position:relative;cursor:pointer;transform-origin:left center;transition:.6s;background:linear-gradient(90deg,#fff,#e8f7ff)}.door.bottom{height:280px;border-bottom:none}.door.open{transform:perspective(800px) rotateY(-72deg)}.handle{position:absolute;right:16px;top:40%;width:8px;height:60px;background:#888;border-radius:8px}.inside{display:none;padding:10px;background:#f8fafc}.inside.show{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 6px 14px rgba(0,0,0,.08)}input,select,button,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:10px;box-sizing:border-box}button{background:#38bdf8;color:#fff;border:none;font-weight:700;cursor:pointer}.danger{background:#ef4444}.item{padding:10px;border-bottom:1px solid #eee}.small{font-size:12px;color:#666}.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#dbeafe;margin-left:6px;font-size:12px}.comment{background:#f3f4f6;padding:8px;border-radius:10px;margin:6px 0}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가족 냉장고 스마트 매니저</title>
+    <style>
+        :root {
+            --danger: #e74c3c;
+            --warning: #f1c40f;
+            --success: #2ecc71;
+            --primary: #34495e;
+            --accent: #3498db;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* 입력 섹션 스타일 */
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-add {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: #2c3e50;
+        }
+
+        /* 식품 리스트 스타일 */
+        .food-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 8px solid #ccc;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .border-danger { border-left-color: var(--danger); }
+        .border-warning { border-left-color: var(--warning); }
+        .border-success { border-left-color: var(--success); }
+
+        .food-img {
+            width: 100px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .food-info {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .food-name { font-size: 1.1rem; font-weight: bold; margin: 0; }
+
+        .d-day {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: white;
+        }
+
+        .bg-danger { background-color: var(--danger); }
+        .bg-warning { background-color: var(--warning); color: #333; }
+        .bg-success { background-color: var(--success); }
+
+        .date-row { font-size: 0.8rem; color: #7f8c8d; margin-top: 5px; }
+
+        .nutrition-box {
+            margin-top: 8px;
+            background: #fdfdfd;
+            border: 1px dashed #ddd;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .recipe-tip { color: var(--accent); font-weight: 500; }
+
+        .actions { margin-top: 10px; display: flex; gap: 8px; }
+
+        button.action-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            background-color: white;
+            color: var(--primary);
+            transition: all 0.2s;
+        }
+
+        button.action-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .analysis-section {
+            margin-top: 40px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+        }
+    </style>
 </head>
 <body>
-<header><h1>🧊 우리집 냉장고</h1><div id='today'></div></header>
-<div class='wrap'>
-<div class='fridge'>
-<div class='door top' onclick='toggleDoor("freezer")'><div class='handle'></div></div>
-<div id='freezer' class='inside'></div>
-<div class='door bottom' onclick='toggleDoor("fridge")'><div class='handle'></div></div>
-<div id='fridge' class='inside'></div>
+
+<div class="container">
+    <header>
+        <h1>🧊 가족 냉장고 스마트 매니저</h1>
+        <p>물품을 입력하면 AI가 유통기한을 관리합니다</p>
+    </header>
+
+    <div class="input-section">
+        <div class="input-group">
+            <label for="foodName">물품 이름</label>
+            <input type="text" id="foodName" placeholder="예: 우유, 소고기, 계란">
+        </div>
+        <div class="input-group">
+            <label for="buyDate">산 날짜</label>
+            <input type="date" id="buyDate">
+        </div>
+        <button class="btn-add" onclick="addNewFood()">냉장고에 넣기</button>
+    </div>
+
+    <div class="food-grid" id="foodList">
+        </div>
+
+    <div class="analysis-section">
+        <h3>📊 전문가 분석 리포트</h3>
+        <p><strong>[분석가]</strong> 등록하신 물품 데이터베이스를 바탕으로 재고를 실시간 추적 중입니다.</p>
+        <p><strong>[영양사]</strong> 산 날짜로부터 각 식품의 권장 소비기한을 계산하여 신선도를 표시합니다.</p>
+    </div>
 </div>
-<div class='grid'>
-<div class='card'>
-<h3>식품 등록</h3>
-<input id='name' placeholder='식품명'>
-<select id='zone'><option value='냉장'>냉장</option><option value='냉동'>냉동</option></select>
-<input id='buy' type='date'>
-<input id='exp' type='date'>
-<input id='qty' type='number' placeholder='수량'>
-<input id='cal' type='number' placeholder='칼로리(kcal)'>
-<textarea id='memo' placeholder='메모'></textarea>
-<button onclick='addItem()'>추가</button>
-</div>
-<div class='card'>
-<h3>알림</h3>
-<div id='alerts'></div>
-</div>
-<div class='card'>
-<h3>가족 메모</h3>
-<input id='user' placeholder='이름'>
-<input id='msg' placeholder='메시지'>
-<button onclick='addComment()'>남기기</button>
-<div id='comments'></div>
-</div>
-<div class='card'>
-<h3>요리 추천</h3>
-<div id='recipes'></div>
-</div>
-</div>
-</div>
+
 <script>
-const KEY='fridge_items_v1', CKEY='fridge_comments_v1';
-const $=id=>document.getElementById(id);
-function load(k){return JSON.parse(localStorage.getItem(k)||'[]')} function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function toggleDoor(id){const door=id==='freezer'?document.querySelector('.top'):document.querySelector('.bottom');door.classList.toggle('open');$(id).classList.toggle('show');render();}
-function addItem(){const items=load(KEY);items.push({name:$("name").value,zone:$("zone").value,buy:$("buy").value,exp:$("exp").value,qty:$("qty").value,cal:$("cal").value,memo:$("memo").value});save(KEY,items);document.querySelectorAll('input,textarea').forEach(e=>{if(e.type!=='date')e.value=''});render();}
-function delItem(i){const items=load(KEY);items.splice(i,1);save(KEY,items);render();}
-function daysLeft(exp){if(!exp)return 999;const d=Math.ceil((new Date(exp)-new Date())/86400000);return d;}
-function render(){const items=load(KEY);$('freezer').innerHTML='<h4>❄ 냉동실</h4>'+items.map((x,i)=>x.zone==='냉동'?row(x,i):'').join('');$('fridge').innerHTML='<h4>🥬 냉장실</h4>'+items.map((x,i)=>x.zone==='냉장'?row(x,i):'').join('');$('alerts').innerHTML=items.map(x=>{const d=daysLeft(x.exp);if(d<0)return '⚠ '+x.name+' 유통기한 지남'; if(d<=3)return '⏰ '+x.name+' '+d+'일 남음'; return '';}).filter(Boolean).join('<br>')||'이상 없음'; const names=items.map(x=>x.name).join(', '); let rec=[]; if(names.includes('계란')) rec.push('계란말이'); if(names.includes('우유')) rec.push('크림파스타'); if(names.includes('햄')) rec.push('햄볶음밥'); if(names.includes('양파')) rec.push('양파수프'); $('recipes').innerHTML=rec.length?rec.join('<br>'):'재료를 추가하면 추천됩니다.'; renderComments();}
-function row(x,i){return `<div class='item'><b>${x.name}</b><span class='badge'>${x.qty||0}개</span><div class='small'>구매:${x.buy||'-'} / 만료:${x.exp||'-'} / ${x.cal||0}kcal</div><div class='small'>${x.memo||''}</div><button class='danger' onclick='delItem(${i})'>삭제</button></div>`}
-function addComment(){const c=load(CKEY);c.unshift({u:$("user").value||'가족',m:$("msg").value,t:new Date().toLocaleString()});save(CKEY,c);$('msg').value='';renderComments();}
-function renderComments(){$('comments').innerHTML=load(CKEY).slice(0,8).map(x=>`<div class='comment'><b>${x.u}</b>: ${x.m}<div class='small'>${x.t}</div></div>`).join('')}
-$('today').textContent=new Date().toLocaleDateString('ko-KR',{dateStyle:'full'});render();
+    // 오늘 날짜로 기본 설정
+    document.getElementById('buyDate').valueAsDate = new Date();
+
+    // 식품별 권장 유통기한 데이터 (일 단위)
+    const shelfLifeData = {
+        "우유": 10, "저지방우유": 10, "계란": 30, "달걀": 30, "소고기": 5, 
+        "돼지고기": 5, "닭고기": 3, "두부": 7, "콩나물": 3, "시금치": 5,
+        "사과": 21, "바나나": 7, "식빵": 5, "요거트": 10, "치즈": 14,
+        "생선": 2, "대파": 10, "양파": 30, "감자": 30
+    };
+
+    // 아이콘 매칭
+    const iconData = {
+        "우유": "🥛", "계란": "🥚", "달걀": "🥚", "소고기": "🥩", "돼지고기": "🥓",
+        "닭고기": "🍗", "두부": "🧊", "콩나물": "🌱", "사과": "🍎", "바나나": "🍌",
+        "빵": "🍞", "요거트": "🍦", "생선": "🐟", "채소": "🥗"
+    };
+
+    function addNewFood() {
+        const nameInput = document.getElementById('foodName');
+        const dateInput = document.getElementById('buyDate');
+        
+        if (!nameInput.value) {
+            alert("물품 이름을 입력해주세요!");
+            return;
+        }
+
+        const name = nameInput.value;
+        const buyDate = new Date(dateInput.value);
+        
+        // 유통기한 찾기 (데이터에 없으면 기본 7일)
+        let days = 7;
+        for (let key in shelfLifeData) {
+            if (name.includes(key)) {
+                days = shelfLifeData[key];
+                break;
+            }
+        }
+
+        // 유통기한 및 남은 날짜 계산
+        const expiryDate = new Date(buyDate);
+        expiryDate.setDate(buyDate.getDate() + days);
+        
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const timeDiff = expiryDate.getTime() - today.getTime();
+        const dDay = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+        // 아이콘 결정
+        let icon = "📦";
+        for (let key in iconData) {
+            if (name.includes(key)) {
+                icon = iconData[key];
+                break;
+            }
+        }
+
+        // 카드 생성 및 렌더링
+        createFoodCard(name, icon, dateInput.value, expiryDate.toISOString().split('T')[0], dDay);
+        
+        // 입력창 초기화
+        nameInput.value = "";
+    }
+
+    function createFoodCard(name, icon, buyDate, expiryDate, dDay) {
+        const foodList = document.getElementById('foodList');
+        
+        let statusClass = "border-success";
+        let dDayClass = "bg-success";
+        let dDayText = `D-${dDay}`;
+
+        if (dDay <= 0) {
+            statusClass = "border-danger";
+            dDayClass = "bg-danger";
+            dDayText = dDay === 0 ? "D-Day" : "기한지남";
+        } else if (dDay <= 3) {
+            statusClass = "border-warning";
+            dDayClass = "bg-warning";
+        }
+
+        const card = document.createElement('div');
+        card.className = `food-card ${statusClass}`;
+        card.innerHTML = `
+            <div class="food-img">${icon}</div>
+            <div class="food-info">
+                <div class="food-header">
+                    <h3 class="food-name">${name}</h3>
+                    <span class="d-day ${dDayClass}">${dDayText}</span>
+                </div>
+                <div class="date-row">산 날짜: ${buyDate} | 유통기한(AI추천): ${expiryDate}</div>
+                <div class="nutrition-box">
+                    👨‍🍳 <span class="recipe-tip">추천 조리:</span> ${name}을(를) 활용한 신선 요리
+                </div>
+                <div class="actions">
+                    <button class="action-btn" onclick="handleItem('${name}', this)">사용 혹은 폐기</button>
+                </div>
+            </div>
+        `;
+        
+        // 최신 물품이 위로 오도록 추가
+        foodList.prepend(card);
+    }
+
+    function handleItem(name, btn) {
+        if(confirm(name + '을(를) 냉장고에서 제외하시겠습니까? (사용 혹은 폐기 완료)')) {
+            btn.closest('.food-card').remove();
+        }
+    }
 </script>
+
 </body>
 </html>
