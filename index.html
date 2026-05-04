@@ -3,27 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>적군 스프라이트 적용 소환 디펜스</title>
+<title>강화된 스프라이트 소환 디펜스</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;background:#10151f;color:white;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+html,body{margin:0;width:100%;height:100%;background:#111823;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
 body{display:flex;justify-content:center;align-items:center}
-#phone{position:relative;width:min(100vw,430px);height:100vh;max-height:932px;background:#65a849;overflow:hidden;user-select:none;touch-action:none}
-#phone:before{content:"";position:absolute;inset:0;background:
-radial-gradient(circle at 10% 4%,#2f7b37 0 26px,transparent 28px),
-radial-gradient(circle at 22% 3%,#386d36 0 24px,transparent 26px),
-radial-gradient(circle at 88% 4%,#2f7b37 0 28px,transparent 30px),
-radial-gradient(circle at 9% 98%,#2f7838 0 48px,transparent 51px),
-radial-gradient(circle at 92% 97%,#2f7838 0 52px,transparent 55px);pointer-events:none}
+#phone{position:relative;width:min(100vw,430px);height:100vh;max-height:932px;background:#68aa4b;overflow:hidden;user-select:none;touch-action:none}
 #topHud{position:absolute;left:0;right:0;top:0;height:112px;z-index:10;padding-top:7px}
 .heroCard{position:absolute;top:7px;width:92px;height:80px;border-radius:12px;border:3px solid #2a2117;background:#333;box-shadow:0 4px 0 rgba(0,0,0,.35);overflow:hidden}
-.heroCard.left{left:7px;background:linear-gradient(135deg,#7fd65d,#205f31)}
+.heroCard.left{left:7px;background:linear-gradient(135deg,#77cb5d,#215f31)}
 .heroCard.right{right:7px;background:linear-gradient(135deg,#ff7b66,#8d2930)}
 .portrait{position:absolute;inset:7px 10px 25px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:32px;border:2px solid rgba(0,0,0,.35)}
 .star{position:absolute;left:-2px;top:-2px;width:29px;height:29px;border-radius:50%;background:#ffd43c;color:#211400;display:flex;align-items:center;justify-content:center;font-weight:1000;border:3px solid #593900}
 .hp{position:absolute;right:6px;bottom:22px;font-weight:1000;font-size:17px;text-shadow:2px 2px #000}
 .namePlate{position:absolute;left:4px;right:4px;bottom:4px;height:21px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;border:2px solid rgba(0,0,0,.4);text-shadow:1px 1px #000}
-.left .namePlate{background:#0b72c9}.right .namePlate{background:#d63a43}
+.left .namePlate{background:#0b72c9} .right .namePlate{background:#d63a43}
 #waveBox{position:absolute;top:8px;left:108px;right:108px;height:70px;border-radius:12px;background:linear-gradient(#4b4b4b,#191919);border:3px solid #1d1d1d;box-shadow:0 4px 0 rgba(0,0,0,.35);text-align:center}
 #waveBox .wave{font-size:15px;font-weight:1000;line-height:18px;margin-top:4px}
 #waveBox .timer{font-size:31px;font-weight:1000;line-height:30px;letter-spacing:-2px;text-shadow:2px 3px #000}
@@ -31,13 +25,12 @@ radial-gradient(circle at 92% 97%,#2f7838 0 52px,transparent 55px);pointer-event
 #progress{position:absolute;top:82px;left:94px;right:94px;height:27px;border-radius:10px;background:#17100d;border:2px solid #090909;box-shadow:0 3px 0 rgba(0,0,0,.25);overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:16px;text-shadow:2px 2px #000}
 #progressFill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#39b5ff,#78df66);opacity:.85}
 #progressText{position:relative;z-index:1}
-#battle{position:absolute;left:5px;right:5px;top:108px;bottom:147px;border-radius:13px;background:#65a849;border:3px solid #315f2e;box-shadow:inset 0 0 0 3px rgba(255,255,255,.06);overflow:hidden}
+#battle{position:absolute;left:6px;right:6px;top:108px;bottom:147px;border-radius:14px;background:#68aa4b;border:3px solid #315f2e;box-shadow:inset 0 0 0 3px rgba(255,255,255,.06);overflow:hidden}
 canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
-#floatingText{position:absolute;left:14px;top:250px;color:#7effff;font-weight:1000;font-size:16px;text-shadow:2px 2px #004b54;line-height:18px;pointer-events:none;z-index:3}
 #bottomHud{position:absolute;left:0;right:0;bottom:0;height:154px;z-index:15;background:linear-gradient(transparent,rgba(0,0,0,.18) 25%,rgba(0,0,0,.28))}
-#resourceBar{position:absolute;left:48px;right:70px;top:2px;height:34px;border-radius:15px;background:rgba(31,24,17,.9);display:flex;align-items:center;justify-content:space-around;border:2px solid rgba(255,255,255,.12);font-weight:1000;font-size:14px}
-.roundBtn{position:absolute;top:0;width:42px;height:42px;border-radius:50%;background:#24272d;border:3px solid #0d0e10;display:flex;align-items:center;justify-content:center;font-weight:1000;box-shadow:0 3px 0 rgba(0,0,0,.45)}
-#speedBtn{right:50px}#menuBtn{right:5px;font-size:23px}
+#resourceBar{position:absolute;left:12px;right:64px;top:2px;height:34px;border-radius:15px;background:rgba(31,24,17,.92);display:flex;align-items:center;justify-content:space-around;border:2px solid rgba(255,255,255,.12);font-weight:1000;font-size:14px}
+.roundBtn{position:absolute;top:0;width:46px;height:46px;border-radius:50%;background:#24272d;border:3px solid #0d0e10;display:flex;align-items:center;justify-content:center;font-weight:1000;box-shadow:0 3px 0 rgba(0,0,0,.45);color:#fff}
+#speedBtn{right:10px}
 #summonBtn{position:absolute;left:128px;right:98px;bottom:17px;height:88px;border-radius:18px;background:linear-gradient(#ffe654,#f7ae17);border:4px solid #543206;box-shadow:0 7px 0 #4a2d05;color:#231400;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:1000;cursor:pointer}
 #summonBtn .big{font-size:29px;color:white;text-shadow:2px 3px #111;line-height:30px}
 #summonBtn .cost{margin-top:7px;min-width:86px;background:#2b1b0d;color:white;border-radius:15px;padding:5px 10px;font-size:20px;text-align:center}
@@ -54,24 +47,29 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
 #startCard p{margin:8px 0 14px;line-height:1.45;font-size:15px;font-weight:700}
 #startGame,#restartGame{width:100%;height:56px;border:0;border-radius:16px;background:linear-gradient(#ffe553,#f4ae16);border:3px solid #5b3706;box-shadow:0 5px 0 #4b2d04;font-size:24px;font-weight:1000;color:#2b1600}
 @media(max-height:760px){
-#topHud{transform:scale(.92);transform-origin:top center}
-#battle{top:104px;bottom:136px}
-#bottomHud{height:145px;transform:scale(.92);transform-origin:bottom center}
+  #topHud{transform:scale(.92);transform-origin:top center}
+  #battle{top:104px;bottom:136px}
+  #bottomHud{height:145px;transform:scale(.92);transform-origin:bottom center}
 }
 </style>
 </head>
 <body>
 <div id="phone">
   <div id="topHud">
-    <div class="heroCard left"><div class="portrait">🍁</div><div class="star">4</div><div class="hp">100</div><div class="namePlate">바람이</div></div>
+    <div class="heroCard left"><div class="portrait">🏰</div><div class="star">5</div><div class="hp" id="towerMiniHp">100</div><div class="namePlate">본진</div></div>
     <div id="waveBox"><div class="wave">WAVE <span id="wave">1</span></div><div class="timer" id="timer">00:20</div><div class="diff" id="difficulty">보통</div></div>
-    <div class="heroCard right"><div class="portrait">👹</div><div class="star">10</div><div class="hp" id="enemyHp">100</div><div class="namePlate">저주군단</div></div>
+    <div class="heroCard right"><div class="portrait">👹</div><div class="star">10</div><div class="hp" id="enemyInfo">100</div><div class="namePlate">저주군단</div></div>
     <div id="progress"><div id="progressFill"></div><span id="progressText">0 / 100</span></div>
   </div>
-  <div id="battle"><canvas id="game"></canvas><div id="floatingText">2M<br>19K<br>23K</div></div>
+  <div id="battle"><canvas id="game"></canvas></div>
   <div id="bottomHud">
-    <div id="resourceBar"><span>🪙 <span id="gold">300</span></span><span>💎 <span id="gem">15</span></span><span>❤️ <span id="lives">5 / 5</span></span><span>👾 <span id="alive">0</span></span></div>
-    <div id="speedBtn" class="roundBtn">x1</div><div id="menuBtn" class="roundBtn">☰</div>
+    <div id="resourceBar">
+      <span>🪙 <span id="gold">300</span></span>
+      <span>💎 <span id="gem">15</span></span>
+      <span>🏰 <span id="lives">100%</span></span>
+      <span>👾 <span id="alive">0</span></span>
+    </div>
+    <div id="speedBtn" class="roundBtn">x1</div>
     <div id="skillBtn"><div class="btnIcon">🔥</div><div class="btnText">스킬</div></div>
     <div id="summonBtn"><div class="big">소환</div><div class="cost">🪙 <span id="summonCost">70</span></div></div>
     <div id="upgradeBtn"><div class="btnIcon">⬆</div><div class="btnText">강화</div></div>
@@ -79,11 +77,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   <div id="toast">메시지</div>
   <div id="startOverlay">
     <div id="startCard">
-      <h1>적군 스프라이트 적용 완료</h1>
+      <h1>개선판 완성</h1>
       <p>
-        이번 버전은 네가 고른 4개의 적군 스프라이트 시트를 실제 적 유닛으로 적용했어.<br>
-        <b>광기 포병 / 저주의 검사 / 저주의 술사 / 해골 마수</b>가 길을 따라 움직여.<br>
-        아군은 이전처럼 드래그 배치 가능, 적은 100마리 초과 시 패배.
+        적 원거리 유닛도 투사체가 보이도록 수정했어.<br>
+        맵은 더 구불구불하게 바뀌고, 본진도 조금 더 그럴듯하게 그려졌어.<br>
+        불필요한 장식과 메뉴 버튼은 제거했어.
       </p>
       <button id="startGame">게임 시작</button>
     </div>
@@ -115,56 +113,61 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
     sheets[key] = img;
   }
 
-  let W = 0, H = 0, dpr = 1, drag = null, path = [];
-
+  let W=0,H=0,dpr=1,drag=null,path=[];
+  const baseTower = {x:0,y:0,hp:1800,maxHp:1800,flash:0};
   const state = {
-    running:false, wave:1, timer:20, gold:300, gem:15, lives:5, summonCost:70,
-    level:1, speed:1, spawned:0, kills:0, enemies:[], units:[], bullets:[], effects:[],
-    last:0, spawnClock:0, maxAlive:100
+    running:false,wave:1,timer:20,gold:300,gem:15,summonCost:70,level:1,speed:1,
+    spawned:0,kills:0,enemies:[],units:[],bullets:[],enemyBullets:[],effects:[],
+    last:0,spawnClock:0,maxAlive:100
   };
 
   const allyTypes = [
-    {kind:'water', name:'물 정령', sprite:'allyWater', dmg:26, rate:.95, range:150, rarity:30, bulletColor:'#7edbff', bulletSpeed:380, scale:.30, splash:0},
-    {kind:'fire', name:'불 검객', sprite:'allyFire', dmg:46, rate:.72, range:82, rarity:28, melee:true, scale:.31},
-    {kind:'forest', name:'숲 요정', sprite:'allyForest', dmg:34, rate:1.05, range:170, rarity:24, bulletColor:'#a7f26e', bulletSpeed:340, splash:38, scale:.30},
-    {kind:'cannon', name:'대포 유닛', sprite:'allyCannon', dmg:72, rate:1.35, range:190, rarity:18, bulletColor:'#ffc15a', bulletSpeed:320, splash:58, scale:.31}
+    {kind:'water', name:'물 정령', sprite:'allyWater', role:'중거리', dmg:24, rate:.95, range:140, rarity:30, bulletColor:'#7edbff', bulletSpeed:390, scale:.30, splash:0, maxHp:155, defense:0},
+    {kind:'fire', name:'불 검객', sprite:'allyFire', role:'근접', dmg:52, rate:.72, range:82, rarity:28, melee:true, scale:.31, maxHp:250, defense:5},
+    {kind:'forest', name:'숲 요정', sprite:'allyForest', role:'장거리', dmg:30, rate:1.05, range:185, rarity:24, bulletColor:'#a7f26e', bulletSpeed:350, splash:34, scale:.30, maxHp:135, defense:0},
+    {kind:'cannon', name:'대포 유닛', sprite:'allyCannon', role:'초장거리', dmg:72, rate:1.42, range:225, rarity:18, bulletColor:'#ffc15a', bulletSpeed:320, splash:62, scale:.31, maxHp:190, defense:2}
   ];
 
   const enemyArchetypes = [
-    {kind:'beast', name:'해골 마수', sprite:'enemyBeast', speedBase:62, hpBase:70, reward:8, scale:.27, color:'#5ff17e'},
-    {kind:'sword', name:'저주의 검사', sprite:'enemySword', speedBase:47, hpBase:110, reward:12, scale:.29, color:'#ff5b6b'},
-    {kind:'sorcerer', name:'저주의 술사', sprite:'enemySorcerer', speedBase:39, hpBase:135, reward:16, scale:.29, color:'#b16bff'},
-    {kind:'gunner', name:'광기 포병', sprite:'enemyGunner', speedBase:33, hpBase:175, reward:22, scale:.30, color:'#ffa63d'}
+    {kind:'beast', name:'해골 마수', sprite:'enemyBeast', speedBase:68, hpBase:78, reward:8, scale:.27, color:'#5ff17e', attackRange:42, attackDamage:16, attackRate:.90, towerDamage:30, ranged:false},
+    {kind:'sword', name:'저주의 검사', sprite:'enemySword', speedBase:48, hpBase:115, reward:12, scale:.29, color:'#ff5b6b', attackRange:48, attackDamage:27, attackRate:1.08, towerDamage:42, ranged:false},
+    {kind:'sorcerer', name:'저주의 술사', sprite:'enemySorcerer', speedBase:39, hpBase:140, reward:16, scale:.29, color:'#b16bff', attackRange:125, attackDamage:20, attackRate:1.35, towerDamage:54, ranged:true, projectileSpeed:290, splash:0},
+    {kind:'gunner', name:'광기 포병', sprite:'enemyGunner', speedBase:33, hpBase:185, reward:22, scale:.30, color:'#ffa63d', attackRange:150, attackDamage:31, attackRate:1.65, towerDamage:72, ranged:true, projectileSpeed:260, splash:26}
   ];
 
-  function resize() {
-    dpr = Math.min(2, window.devicePixelRatio || 1);
-    const r = battle.getBoundingClientRect();
-    W = r.width; H = r.height;
-    canvas.width = Math.floor(W * dpr);
-    canvas.height = Math.floor(H * dpr);
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  function resize(){
+    dpr=Math.min(2,window.devicePixelRatio||1);
+    const r=battle.getBoundingClientRect();
+    W=r.width; H=r.height;
+    canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
     makePath();
+    draw();
   }
-  window.addEventListener('resize', resize);
-  resize();
+  window.addEventListener('resize',resize);
 
-  function makePath() {
+  function makePath(){
     path = [
-      {x:-24,y:H*.20},{x:W*.93,y:H*.20},{x:W*.93,y:H*.48},
-      {x:W*.07,y:H*.48},{x:W*.07,y:H*.74},{x:W*.93,y:H*.74},
-      {x:W*.93,y:H*.20}
+      {x:-30, y:H*0.14},
+      {x:W*0.80, y:H*0.14},
+      {x:W*0.80, y:H*0.30},
+      {x:W*0.20, y:H*0.30},
+      {x:W*0.20, y:H*0.46},
+      {x:W*0.84, y:H*0.46},
+      {x:W*0.84, y:H*0.63},
+      {x:W*0.13, y:H*0.63},
+      {x:W*0.13, y:H*0.82},
+      {x:W*0.86, y:H*0.82},
+      {x:W*0.93, y:H*0.82}
     ];
+    baseTower.x = W*0.94;
+    baseTower.y = H*0.82;
   }
 
-  function toast(msg) {
-    const t = $('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toast.t);
-    toast.t = setTimeout(() => t.classList.remove('show'), 900);
+  function toast(msg){
+    const t=$('toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),900);
   }
 
   function pointToSegmentDistance(px,py,ax,ay,bx,by){
@@ -176,14 +179,12 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   }
 
   function onRoad(x,y){
-    for(let i=0;i<path.length-1;i++){
-      if(pointToSegmentDistance(x,y,path[i].x,path[i].y,path[i+1].x,path[i+1].y)<37) return true;
-    }
+    for(let i=0;i<path.length-1;i++) if(pointToSegmentDistance(x,y,path[i].x,path[i].y,path[i+1].x,path[i+1].y)<36) return true;
     return false;
   }
 
   function inBuildZone(x,y){
-    return x>18 && x<W-18 && y>18 && y<H-18 && !onRoad(x,y);
+    return x>20 && x<W-20 && y>20 && y<H-20 && !onRoad(x,y) && Math.hypot(x-baseTower.x,y-baseTower.y)>66;
   }
 
   function randAllyType(){
@@ -199,33 +200,22 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
       const y=34+Math.random()*(H-68);
       if(inBuildZone(x,y) && !state.units.some(u=>Math.hypot(u.x-x,u.y-y)<42)) return {x,y};
     }
-    return {x:W*.5,y:H*.36};
+    return {x:W*.44,y:H*.20};
   }
 
   function summon(free=false){
     if(!state.running) return;
-    if(!free && state.gold < state.summonCost) return toast('골드가 부족합니다');
-    if(state.units.length >= 36) return toast('유닛이 너무 많습니다');
-
+    if(!free && state.gold<state.summonCost) return toast('골드가 부족합니다');
+    if(state.units.length>=36) return toast('유닛이 너무 많습니다');
     if(!free){
-      state.gold -= state.summonCost;
-      state.summonCost = Math.floor(state.summonCost * 1.04 + 2);
+      state.gold-=state.summonCost;
+      state.summonCost=Math.floor(state.summonCost*1.04+2);
     }
-
-    const base = randAllyType();
-    const p = safeSpawnPos();
+    const base=randAllyType(), p=safeSpawnPos();
     state.units.push({
-      id:Math.random(),
-      ...base,
-      x:p.x,y:p.y,
-      grade:1,
-      cd:Math.random()*.4,
-      drag:false,
-      action:'idle',
-      actionTime:0,
-      animTime:Math.random()*.6
+      id:Math.random(), ...base, x:p.x, y:p.y, hp:base.maxHp, grade:1, cd:Math.random()*.4,
+      drag:false, action:'idle', actionTime:0, animTime:Math.random()*.6, facing:1, hitFlash:0, dead:false
     });
-
     toast(base.name + ' 소환!');
     mergeCheck();
     updateHud();
@@ -242,6 +232,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
             const keep=same[0];
             same.slice(1,3).forEach(u=>state.units.splice(state.units.indexOf(u),1));
             keep.grade++;
+            keep.maxHp=Math.floor(keep.maxHp*1.35);
+            keep.hp=keep.maxHp;
             keep.dmg=Math.floor(keep.dmg*1.8);
             keep.range+=14;
             keep.rate*=.92;
@@ -259,57 +251,53 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   function upgrade(){
     const cost=10+state.level*5;
     if(state.gem<cost) return toast(`강화 비용 부족: 💎${cost}`);
-    state.gem-=cost;
-    state.level++;
-    for(const u of state.units) u.dmg=Math.floor(u.dmg*1.15);
-    toast(`전체 강화 Lv.${state.level}`);
+    state.gem-=cost; state.level++;
+    for(const u of state.units){
+      u.dmg=Math.floor(u.dmg*1.15);
+      u.maxHp=Math.floor(u.maxHp*1.08);
+      u.hp=Math.min(u.maxHp, u.hp+30);
+    }
+    toast(`공격/체력 강화 Lv.${state.level}`);
     updateHud();
   }
 
   function skill(){
     if(state.gem<3) return toast('스킬 비용 💎3 필요');
     state.gem-=3;
-    for(const e of state.enemies) e.hp -= 150 + state.wave * 30;
-    state.effects.push({x:W*.38,y:H*.48,r:20,max:230,life:.48,color:'#fff66b'});
+    for(const e of state.enemies) e.hp-=150+state.wave*30;
+    state.effects.push({x:W*.45,y:H*.48,r:20,max:240,life:.48,color:'#fff66b'});
     toast('광역 스킬!');
     updateHud();
   }
 
-  function chooseEnemyType() {
-    const w = state.wave;
-    const pool = [];
+  function chooseEnemyType(){
+    const w=state.wave;
+    const pool=[];
     for(let i=0;i<6;i++) pool.push(enemyArchetypes[0]);
     if(w>=2) for(let i=0;i<Math.min(5,2+Math.floor(w/2));i++) pool.push(enemyArchetypes[1]);
     if(w>=4) for(let i=0;i<Math.min(5,1+Math.floor(w/3));i++) pool.push(enemyArchetypes[2]);
     if(w>=6) for(let i=0;i<Math.min(4,1+Math.floor(w/4));i++) pool.push(enemyArchetypes[3]);
-    if(w % 5 === 0 && Math.random() < .25) return enemyArchetypes[3];
-    return pool[Math.floor(Math.random() * pool.length)];
+    if(w%5===0 && Math.random()<.25) return enemyArchetypes[3];
+    return pool[Math.floor(Math.random()*pool.length)];
   }
 
-  function spawnEnemy() {
-    const t = chooseEnemyType();
-    const hp = Math.floor(t.hpBase + state.wave * 18 + Math.pow(state.wave, 1.22) * 8);
+  function spawnEnemy(){
+    const t=chooseEnemyType();
+    const hp=Math.floor(t.hpBase + state.wave*20 + Math.pow(state.wave,1.24)*9);
     state.enemies.push({
-      x:path[0].x,y:path[0].y,seg:1,
-      hp:hp,maxHp:hp,
-      speed:t.speedBase + Math.min(18, state.wave*0.9),
-      reward:t.reward + Math.floor(state.wave*0.3),
-      type:t.kind,
-      name:t.name,
-      sprite:t.sprite,
-      scale:t.scale,
-      accent:t.color,
-      dead:false,
-      laps:0,
-      animTime:Math.random()*.6,
-      actionTime:0,
-      actionClock:1.5+Math.random()*2.0
+      x:path[0].x,y:path[0].y,seg:1,prevX:path[0].x,prevY:path[0].y,
+      hp,maxHp:hp,speed:t.speedBase+Math.min(18,state.wave*.9),reward:t.reward+Math.floor(state.wave*.35),
+      type:t.kind,name:t.name,sprite:t.sprite,scale:t.scale,accent:t.color,
+      attackRange:t.attackRange,attackDamage:t.attackDamage,attackRate:t.attackRate,attackCd:Math.random()*.8,
+      towerDamage:t.towerDamage,ranged:!!t.ranged,projectileSpeed:t.projectileSpeed||0,splash:t.splash||0,
+      dead:false,animTime:Math.random()*.6,actionTime:0,facing:1
     });
     state.spawned++;
   }
 
   function updateHud(){
     const alive=state.enemies.length;
+    const hpPct=Math.max(0,Math.ceil(baseTower.hp/baseTower.maxHp*100));
     $('wave').textContent=state.wave;
     $('timer').textContent='00:'+String(Math.max(0,Math.ceil(state.timer))).padStart(2,'0');
     $('difficulty').textContent=state.wave<5?'보통':state.wave<10?'어려움':'지옥';
@@ -317,44 +305,70 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
     $('progressFill').style.width=Math.min(100,alive/state.maxAlive*100)+'%';
     $('gold').textContent=state.gold;
     $('gem').textContent=state.gem;
-    $('lives').textContent=`${state.lives} / 5`;
+    $('lives').textContent=hpPct+'%';
     $('alive').textContent=alive;
     $('summonCost').textContent=state.summonCost;
     $('speedBtn').textContent='x'+state.speed;
-    $('enemyHp').textContent=Math.max(0, state.maxAlive - alive);
+    $('enemyInfo').textContent=Math.max(0,state.maxAlive-alive);
+    $('towerMiniHp').textContent=hpPct;
   }
 
-  function findTarget(unit){
+  function findEnemyForAlly(unit){
     let target=null,best=Infinity;
     for(const e of state.enemies){
       const d=Math.hypot(e.x-unit.x,e.y-unit.y);
-      if(d<=unit.range && d<best){ best=d; target=e; }
+      if(d<=unit.range && d<best){best=d;target=e;}
     }
     return target;
   }
 
-  function triggerAttack(unit,target){
-    unit.action='attack';
-    unit.actionTime=.42;
+  function nearestAllyForEnemy(enemy){
+    let target=null,best=Infinity;
+    for(const u of state.units){
+      const d=Math.hypot(enemy.x-u.x, enemy.y-u.y);
+      if(d<=enemy.attackRange && d<best){best=d;target=u;}
+    }
+    return target;
+  }
+
+  function triggerAllyAttack(unit,target){
+    unit.action='attack'; unit.actionTime=.42; unit.facing=target.x>=unit.x?1:-1;
     if(unit.melee){
       target.hp-=unit.dmg;
+      target.hitFlash=.16;
       state.effects.push({x:target.x,y:target.y,r:10,max:36,life:.18,color:'#ff9c54'});
-      return;
+    } else {
+      state.bullets.push({x:unit.x,y:unit.y,tx:target,speed:unit.bulletSpeed||360,dmg:unit.dmg,color:unit.bulletColor||'#fff',splash:unit.splash||0});
     }
-    state.bullets.push({
-      x:unit.x,y:unit.y,tx:target,
-      speed:unit.bulletSpeed||360,dmg:unit.dmg,
-      color:unit.bulletColor||'#fff',splash:unit.splash||0
-    });
+  }
+
+  function triggerEnemyAttack(enemy,target){
+    enemy.actionTime=.38; enemy.facing=target.x>=enemy.x?1:-1;
+    if(enemy.ranged){
+      state.enemyBullets.push({
+        x:enemy.x,y:enemy.y,tx:target,speed:enemy.projectileSpeed,dmg:enemy.attackDamage,
+        color:enemy.accent,splash:enemy.splash||0,type:enemy.type
+      });
+    } else {
+      const dmg=Math.max(3, Math.floor(enemy.attackDamage + state.wave*0.9 - (target.defense||0)));
+      target.hp-=dmg;
+      target.hitFlash=.16;
+      state.effects.push({x:target.x,y:target.y,r:8,max:28,life:.18,color:enemy.accent});
+    }
+    enemy.attackCd=enemy.attackRate;
+  }
+
+  function damageTower(enemy){
+    const dmg=enemy.towerDamage + state.wave*3;
+    baseTower.hp-=dmg;
+    baseTower.flash=.24;
+    state.effects.push({x:baseTower.x,y:baseTower.y,r:20,max:70,life:.32,color:enemy.accent});
+    if(baseTower.hp<=0) gameOver('본진이 무너졌습니다');
   }
 
   function start(){
-    Object.assign(state,{
-      running:true,wave:1,timer:20,gold:300,gem:15,lives:5,summonCost:70,
-      level:1,speed:1,spawned:0,kills:0,enemies:[],units:[],bullets:[],effects:[],
-      last:performance.now(),spawnClock:0
-    });
-
+    Object.assign(state,{running:true,wave:1,timer:20,gold:300,gem:15,summonCost:70,level:1,speed:1,spawned:0,kills:0,enemies:[],units:[],bullets:[],enemyBullets:[],effects:[],last:performance.now(),spawnClock:0});
+    baseTower.hp=baseTower.maxHp=1800; baseTower.flash=0;
     $('startOverlay').style.display='none';
     for(let i=0;i<6;i++) summon(true);
     updateHud();
@@ -364,125 +378,154 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   function nextWave(){
     state.wave++;
     state.timer=Math.max(8,21-Math.floor(state.wave/4));
-    state.gold += 70 + state.wave * 18;
-    state.gem += state.wave%2 ? 1 : 2;
+    state.gold+=70+state.wave*18;
+    state.gem+=state.wave%2?1:2;
     state.spawned=0;
     toast(`WAVE ${state.wave}`);
     updateHud();
   }
 
-  function update(dt){
+  function update(dtRaw){
     if(!state.running) return;
-    dt *= state.speed;
-    state.timer -= dt;
-    state.spawnClock -= dt;
+    const dt=Math.min(.04,dtRaw)*state.speed;
+    state.timer-=dt;
+    state.spawnClock-=dt;
+    if(baseTower.flash>0) baseTower.flash-=dt;
 
-    if(state.spawnClock <= 0){
+    if(state.spawnClock<=0){
       spawnEnemy();
-      state.spawnClock = Math.max(.14, .70 - state.wave * .022);
+      state.spawnClock=Math.max(.14,.70-state.wave*.022);
     }
-    if(state.timer <= 0) nextWave();
+    if(state.timer<=0) nextWave();
 
     for(const e of state.enemies){
-      e.animTime += dt;
-      e.actionClock -= dt;
-      if(e.actionClock <= 0){
-        e.actionTime = .38;
-        e.actionClock = 1.6 + Math.random()*2.4;
-      }
-      if(e.actionTime > 0) e.actionTime -= dt;
+      e.prevX=e.x; e.prevY=e.y;
+      e.animTime+=dt;
+      if(e.actionTime>0) e.actionTime-=dt;
+      e.attackCd-=dt;
 
-      const target = path[e.seg];
-      const dx = target.x - e.x, dy = target.y - e.y;
-      const dist = Math.hypot(dx,dy);
-      const step = e.speed * dt;
-      if(dist <= step){
-        e.x = target.x; e.y = target.y; e.seg++;
-        if(e.seg >= path.length){
-          e.seg = 1; e.x = path[0].x; e.y = path[0].y; e.laps++;
-        }
+      const targetAlly=nearestAllyForEnemy(e);
+      if(targetAlly){
+        if(e.attackCd<=0) triggerEnemyAttack(e,targetAlly);
       } else {
-        e.x += dx/dist*step;
-        e.y += dy/dist*step;
+        const pt=path[e.seg];
+        const dx=pt.x-e.x, dy=pt.y-e.y, dist=Math.hypot(dx,dy), step=e.speed*dt;
+        if(dist<=step){
+          e.x=pt.x; e.y=pt.y; e.seg++;
+          if(e.seg>=path.length){
+            damageTower(e);
+            e.dead=true;
+          }
+        } else {
+          e.x+=dx/dist*step; e.y+=dy/dist*step;
+        }
+        const moveDx=e.x-e.prevX;
+        if(Math.abs(moveDx)>.2) e.facing=moveDx>=0?1:-1;
       }
     }
 
     for(const u of state.units){
-      u.animTime += dt;
-      if(u.actionTime > 0){ u.actionTime -= dt; if(u.actionTime <= 0) u.action='idle'; }
+      u.animTime+=dt;
+      if(u.hitFlash>0) u.hitFlash-=dt;
+      if(u.actionTime>0){ u.actionTime-=dt; if(u.actionTime<=0) u.action='idle'; }
       if(u.drag) continue;
-      u.cd -= dt;
-      if(u.cd <= 0){
-        const target = findTarget(u);
-        if(target){ triggerAttack(u,target); u.cd = Math.max(.18, u.rate); }
+      u.cd-=dt;
+      if(u.cd<=0){
+        const target=findEnemyForAlly(u);
+        if(target){ triggerAllyAttack(u,target); u.cd=Math.max(.18,u.rate); }
       }
     }
 
     for(const b of state.bullets){
       if(b.tx.dead){ b.dead=true; continue; }
       const dx=b.tx.x-b.x, dy=b.tx.y-b.y, d=Math.hypot(dx,dy);
-      if(d < 13){
+      if(d<13){
         if(b.splash){
-          for(const e of state.enemies){
-            if(Math.hypot(e.x-b.tx.x, e.y-b.tx.y) < b.splash) e.hp -= b.dmg;
-          }
+          for(const e of state.enemies) if(Math.hypot(e.x-b.tx.x,e.y-b.tx.y)<b.splash) e.hp-=b.dmg;
           state.effects.push({x:b.tx.x,y:b.tx.y,r:15,max:b.splash,life:.26,color:b.color});
-        }else{
-          b.tx.hp -= b.dmg;
+        } else {
+          b.tx.hp-=b.dmg;
+          b.tx.hitFlash=.12;
         }
         b.dead=true;
       } else {
-        b.x += dx/d*b.speed*dt;
-        b.y += dy/d*b.speed*dt;
+        b.x+=dx/d*b.speed*dt; b.y+=dy/d*b.speed*dt;
+      }
+    }
+
+    for(const b of state.enemyBullets){
+      if(!b.tx || b.tx.dead){ b.dead=true; continue; }
+      const dx=b.tx.x-b.x, dy=b.tx.y-b.y, d=Math.hypot(dx,dy);
+      if(d<14){
+        if(b.splash){
+          for(const u of state.units) if(Math.hypot(u.x-b.tx.x,u.y-b.tx.y)<b.splash) {
+            u.hp-=Math.max(3, Math.floor(b.dmg - (u.defense||0)));
+            u.hitFlash=.16;
+          }
+          state.effects.push({x:b.tx.x,y:b.tx.y,r:12,max:b.splash,life:.24,color:b.color});
+        } else {
+          b.tx.hp-=Math.max(3, Math.floor(b.dmg - (b.tx.defense||0)));
+          b.tx.hitFlash=.16;
+          state.effects.push({x:b.tx.x,y:b.tx.y,r:8,max:24,life:.18,color:b.color});
+        }
+        b.dead=true;
+      } else {
+        b.x+=dx/d*b.speed*dt; b.y+=dy/d*b.speed*dt;
       }
     }
 
     for(const e of state.enemies){
-      if(e.hp <= 0 && !e.dead){
-        e.dead = true;
-        state.gold += e.reward;
+      if(e.hp<=0 && !e.dead){
+        e.dead=true;
+        state.gold+=e.reward;
         state.kills++;
       }
     }
 
-    state.enemies = state.enemies.filter(e=>!e.dead);
-    state.bullets = state.bullets.filter(b=>!b.dead);
-    for(const ef of state.effects) ef.life -= dt;
-    state.effects = state.effects.filter(e=>e.life > 0);
-
-    if(state.enemies.length > state.maxAlive){
-      gameOver('적이 100마리를 넘었습니다');
+    for(const u of state.units){
+      if(u.hp<=0 && !u.dead){
+        u.dead=true;
+        state.effects.push({x:u.x,y:u.y,r:15,max:55,life:.35,color:'#ffffff'});
+      }
     }
+
+    state.enemies=state.enemies.filter(e=>!e.dead);
+    state.units=state.units.filter(u=>!u.dead);
+    state.bullets=state.bullets.filter(b=>!b.dead);
+    state.enemyBullets=state.enemyBullets.filter(b=>!b.dead);
+    for(const ef of state.effects) ef.life-=dt;
+    state.effects=state.effects.filter(e=>e.life>0);
+
+    if(state.enemies.length>state.maxAlive) gameOver('적이 100마리를 넘었습니다');
     updateHud();
   }
 
   function gameOver(msg){
     state.running=false;
     $('startOverlay').style.display='flex';
-    $('startCard').innerHTML = `
-      <h1>게임 오버</h1>
-      <p>${msg}<br>도달 웨이브: <b>${state.wave}</b><br>처치 수: <b>${state.kills}</b></p>
-      <button id="restartGame">다시 시작</button>
-    `;
-    $('restartGame').onclick = () => location.reload();
+    $('startCard').innerHTML=`<h1>게임 오버</h1><p>${msg}<br>도달 웨이브: <b>${state.wave}</b><br>처치 수: <b>${state.kills}</b></p><button id="restartGame">다시 시작</button>`;
+    $('restartGame').onclick=()=>location.reload();
   }
 
   function draw(){
     ctx.clearRect(0,0,W,H);
     drawField();
+    drawBase();
     drawEnemies();
     drawUnits();
     drawBullets();
+    drawEnemyBullets();
     drawEffects();
     if(drag) drawDragGuide();
   }
 
   function drawField(){
-    ctx.fillStyle='#65a849';
+    ctx.fillStyle='#68aa4b';
     ctx.fillRect(0,0,W,H);
 
-    ctx.strokeStyle='#6f4c25';
-    ctx.lineWidth=64;
+    // path border
+    ctx.strokeStyle='#7b542a';
+    ctx.lineWidth=60;
     ctx.lineCap='round';
     ctx.lineJoin='round';
     ctx.beginPath();
@@ -490,55 +533,118 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
     for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x,path[i].y);
     ctx.stroke();
 
-    ctx.strokeStyle='#ead36b';
-    ctx.lineWidth=48;
+    // main path
+    ctx.strokeStyle='#e2c466';
+    ctx.lineWidth=44;
     ctx.beginPath();
     ctx.moveTo(path[0].x,path[0].y);
     for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x,path[i].y);
     ctx.stroke();
 
-    ctx.strokeStyle='rgba(80,45,20,.35)';
+    // center marks
+    ctx.strokeStyle='rgba(120,95,35,.45)';
     ctx.lineWidth=2;
-    ctx.setLineDash([8,8]);
+    ctx.setLineDash([7,8]);
     ctx.beginPath();
     ctx.moveTo(path[0].x,path[0].y);
     for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x,path[i].y);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    ctx.font='27px serif';
-    ctx.fillText('🌳',8,28);
-    ctx.fillText('🌳',W-35,28);
-    ctx.fillText('🪵',10,H-18);
-    ctx.fillText('💬',W-43,H*.52);
-  }
-
-  function getAllyFrameIndex(unit){
-    if(unit.action==='attack' && unit.actionTime>0){
-      const total=.42, progress=1-(unit.actionTime/total);
-      return 4 + Math.min(3, Math.floor(progress*4));
+    // subtle grass patches
+    for(let i=0;i<12;i++) {
+      const gx=(i*37)%W, gy=(i*71)%H;
+      ctx.fillStyle=i%2?'rgba(90,150,58,.24)':'rgba(80,140,50,.18)';
+      ctx.beginPath();
+      ctx.ellipse(gx+20, gy+16, 12, 6, 0, 0, Math.PI*2);
+      ctx.fill();
     }
-    return Math.floor(unit.animTime*7)%4;
   }
 
-  function getEnemyFrameIndex(enemy){
-    if(enemy.actionTime>0){
-      const total=.38, progress=1-(enemy.actionTime/total);
-      return 4 + Math.min(3, Math.floor(progress*4));
+  function drawBase(){
+    const x=baseTower.x, y=baseTower.y;
+    ctx.save();
+    if(baseTower.flash>0) ctx.globalAlpha=.65;
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,.22)';
+    ctx.beginPath();
+    ctx.ellipse(x,y+26,34,10,0,0,Math.PI*2);
+    ctx.fill();
+
+    // base platform
+    roundRect(x-36,y-8,72,44,14,'#6e4a29','#2b1608',4);
+
+    // side towers
+    roundRect(x-34,y-36,18,30,8,'#8f6840','#3b2411',3);
+    roundRect(x+16,y-36,18,30,8,'#8f6840','#3b2411',3);
+
+    // main tower
+    roundRect(x-22,y-54,44,54,10,'#9a734d','#3b2411',4);
+    roundRect(x-16,y-78,32,26,9,'#b38c64','#3b2411',4);
+
+    // crystal / core
+    ctx.fillStyle='#a9eaff';
+    ctx.beginPath();
+    ctx.moveTo(x, y-70); ctx.lineTo(x+11,y-52); ctx.lineTo(x,y-34); ctx.lineTo(x-11,y-52);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#12506d'; ctx.lineWidth=3; ctx.stroke();
+
+    // flags
+    ctx.strokeStyle='#55331a'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x-22,y-78); ctx.lineTo(x-22,y-102); ctx.moveTo(x+22,y-78); ctx.lineTo(x+22,y-102); ctx.stroke();
+    ctx.fillStyle='#2ea8ff';
+    ctx.beginPath(); ctx.moveTo(x-22,y-102); ctx.lineTo(x-2,y-95); ctx.lineTo(x-22,y-88); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+22,y-102); ctx.lineTo(x+2,y-95); ctx.lineTo(x+22,y-88); ctx.closePath(); ctx.fill();
+
+    ctx.restore();
+
+    const bw=72,bh=8,pct=Math.max(0,baseTower.hp/baseTower.maxHp);
+    ctx.fillStyle='rgba(0,0,0,.65)'; ctx.fillRect(x-bw/2,y-96,bw,bh);
+    ctx.fillStyle=pct>.5?'#66ee6d':pct>.25?'#ffe45e':'#ff5959'; ctx.fillRect(x-bw/2,y-96,bw*pct,bh);
+    ctx.strokeStyle='#1c1208'; ctx.lineWidth=2; ctx.strokeRect(x-bw/2,y-96,bw,bh);
+  }
+
+  function roundRect(x,y,w,h,r,fill,stroke,lw){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+    if(fill){ctx.fillStyle=fill;ctx.fill();}
+    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||3;ctx.stroke();}
+  }
+
+  function getAllyFrameIndex(u){
+    if(u.action==='attack' && u.actionTime>0){
+      const total=.42, progress=1-(u.actionTime/total);
+      return 4+Math.min(3,Math.floor(progress*4));
     }
-    return Math.floor(enemy.animTime*6)%4;
+    return Math.floor(u.animTime*7)%4;
   }
 
-  function drawSprite(key, frameIndex, x, y, scale){
+  function getEnemyFrameIndex(e){
+    if(e.actionTime>0){
+      const total=.38, progress=1-(e.actionTime/total);
+      return 4+Math.min(3,Math.floor(progress*4));
+    }
+    return Math.floor(e.animTime*6)%4;
+  }
+
+  function drawSprite(key, frameIndex, x, y, scale, facing=1, flash=false){
     const img=sheets[key];
     if(!img || !img.complete || !img.naturalWidth) return false;
-    const frameW = img.width / 4;
-    const frameH = img.height / 2;
-    const sx = (frameIndex % 4) * frameW;
-    const sy = frameIndex < 4 ? 0 : frameH;
-    const drawW = frameW * scale;
-    const drawH = frameH * scale;
-    ctx.drawImage(img, sx, sy, frameW, frameH, x-drawW/2, y-drawH/2-6, drawW, drawH);
+    const frameW=img.width/4, frameH=img.height/2;
+    const sx=(frameIndex%4)*frameW, sy=frameIndex<4?0:frameH;
+    const drawW=frameW*scale, drawH=frameH*scale;
+    ctx.save();
+    if(flash) ctx.globalAlpha=.58;
+    ctx.translate(x,y);
+    ctx.scale(facing,1);
+    ctx.drawImage(img,sx,sy,frameW,frameH,-drawW/2,-drawH/2-6,drawW,drawH);
+    ctx.restore();
     return true;
   }
 
@@ -548,23 +654,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
       ctx.globalAlpha=.22;
       ctx.fillStyle='#201109';
       ctx.beginPath();
-      ctx.ellipse(e.x, e.y+18, 20, 7, 0, 0, Math.PI*2);
+      ctx.ellipse(e.x,e.y+18,20,7,0,0,Math.PI*2);
       ctx.fill();
       ctx.globalAlpha=1;
-
-      const ok = drawSprite(e.sprite, getEnemyFrameIndex(e), e.x, e.y, e.scale);
-      if(!ok){
-        ctx.fillStyle=e.accent||'#ff6e6e';
-        ctx.beginPath();
-        ctx.arc(e.x,e.y,16,0,Math.PI*2);
-        ctx.fill();
-      }
-
-      const bw=32, bh=5;
-      ctx.fillStyle='rgba(0,0,0,.55)';
-      ctx.fillRect(e.x-bw/2, e.y-30, bw, bh);
-      ctx.fillStyle=e.accent||'#8cff58';
-      ctx.fillRect(e.x-bw/2, e.y-30, bw*Math.max(0,e.hp/e.maxHp), bh);
+      const ok=drawSprite(e.sprite,getEnemyFrameIndex(e),e.x,e.y,e.scale,e.facing);
+      if(!ok){ ctx.fillStyle=e.accent; ctx.beginPath(); ctx.arc(e.x,e.y,16,0,Math.PI*2); ctx.fill(); }
+      const bw=32,bh=5;
+      ctx.fillStyle='rgba(0,0,0,.55)'; ctx.fillRect(e.x-bw/2,e.y-30,bw,bh);
+      ctx.fillStyle=e.accent; ctx.fillRect(e.x-bw/2,e.y-30,bw*Math.max(0,e.hp/e.maxHp),bh);
     }
   }
 
@@ -578,13 +675,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
       ctx.fill();
       ctx.globalAlpha=1;
 
-      const ok = drawSprite(u.sprite, getAllyFrameIndex(u), u.x, u.y, u.scale);
-      if(!ok){
-        ctx.fillStyle=u.kind==='fire'?'#ff7b3e':u.kind==='forest'?'#8ddf50':u.kind==='cannon'?'#c69541':'#66d3ff';
-        ctx.beginPath();
-        ctx.arc(u.x,u.y,18,0,Math.PI*2);
-        ctx.fill();
-      }
+      const ok=drawSprite(u.sprite,getAllyFrameIndex(u),u.x,u.y,u.scale,u.facing,u.hitFlash>0);
+      if(!ok){ ctx.fillStyle='#66d3ff'; ctx.beginPath(); ctx.arc(u.x,u.y,18,0,Math.PI*2); ctx.fill(); }
+
+      const hpPct=Math.max(0,u.hp/u.maxHp);
+      ctx.fillStyle='rgba(0,0,0,.55)';
+      ctx.fillRect(u.x-20,u.y+30,40,5);
+      ctx.fillStyle=hpPct>.5?'#7cff65':hpPct>.25?'#ffe45e':'#ff5959';
+      ctx.fillRect(u.x-20,u.y+30,40*hpPct,5);
 
       ctx.fillStyle='#ffe763';
       ctx.font='bold 12px system-ui';
@@ -601,6 +699,13 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
         ctx.beginPath();
         ctx.arc(u.x,u.y,28,0,Math.PI*2);
         ctx.stroke();
+
+        ctx.globalAlpha=.10;
+        ctx.fillStyle='#ffffff';
+        ctx.beginPath();
+        ctx.arc(u.x,u.y,u.range,0,Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha=1;
       }
     }
   }
@@ -608,9 +713,29 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   function drawBullets(){
     for(const b of state.bullets){
       ctx.fillStyle=b.color;
-      ctx.beginPath();
-      ctx.arc(b.x,b.y,5,0,Math.PI*2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x,b.y,5,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=.35;
+      ctx.fillStyle=b.color;
+      ctx.beginPath(); ctx.arc(b.x,b.y,10,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  }
+
+  function drawEnemyBullets(){
+    for(const b of state.enemyBullets){
+      ctx.save();
+      if(b.type==='gunner'){
+        ctx.fillStyle='#ff9c3f';
+        ctx.beginPath(); ctx.arc(b.x,b.y,6,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,185,90,.7)'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(b.x-8,b.y); ctx.lineTo(b.x+8,b.y); ctx.stroke();
+      } else {
+        ctx.fillStyle='#b16bff';
+        ctx.beginPath(); ctx.arc(b.x,b.y,6,0,Math.PI*2); ctx.fill();
+        ctx.globalAlpha=.4;
+        ctx.beginPath(); ctx.arc(b.x,b.y,12,0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
     }
   }
 
@@ -627,20 +752,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
   }
 
   function drawDragGuide(){
-    ctx.globalAlpha=.10;
+    ctx.globalAlpha=.07;
     ctx.fillStyle='#00ff9d';
     ctx.fillRect(0,0,W,H);
-    ctx.globalAlpha=.55;
-    ctx.strokeStyle='#ffef65';
-    ctx.lineWidth=4;
-    ctx.setLineDash([8,7]);
-    ctx.strokeRect(18,18,W-36,H-36);
-    ctx.setLineDash([]);
     ctx.globalAlpha=1;
   }
 
   function loop(t){
-    const dt=Math.min(.04,(t-state.last)/1000||0);
+    const dt=(t-state.last)/1000||0;
     state.last=t;
     update(dt);
     draw();
@@ -649,10 +768,10 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
 
   function pointer(e){
     const r=canvas.getBoundingClientRect();
-    return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*H/r.height};
+    return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
   }
 
-  canvas.addEventListener('pointerdown', e=>{
+  canvas.addEventListener('pointerdown',e=>{
     if(!state.running) return;
     const p=pointer(e);
     const u=[...state.units].reverse().find(v=>Math.hypot(v.x-p.x,v.y-p.y)<33);
@@ -663,33 +782,29 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
     }
   });
 
-  canvas.addEventListener('pointermove', e=>{
+  canvas.addEventListener('pointermove',e=>{
     if(!drag) return;
     const p=pointer(e);
-    drag.u.x = p.x + drag.offX;
-    drag.u.y = p.y + drag.offY;
+    drag.u.x=p.x+drag.offX;
+    drag.u.y=p.y+drag.offY;
   });
 
-  canvas.addEventListener('pointerup', ()=>{
+  canvas.addEventListener('pointerup',()=>{
     if(!drag) return;
     if(!inBuildZone(drag.u.x,drag.u.y)){
-      drag.u.x=drag.oldX;
-      drag.u.y=drag.oldY;
-      toast('길 위에는 배치할 수 없습니다');
-    }else{
+      drag.u.x=drag.oldX; drag.u.y=drag.oldY;
+      toast('길/본진 주변에는 배치할 수 없습니다');
+    } else {
       toast('배치 완료');
     }
     drag.u.drag=false;
     drag=null;
-    mergeCheck();
-    updateHud();
   });
 
   $('summonBtn').onclick=()=>summon(false);
   $('upgradeBtn').onclick=upgrade;
   $('skillBtn').onclick=skill;
   $('speedBtn').onclick=()=>{state.speed=state.speed===1?2:1; updateHud();};
-  $('menuBtn').onclick=()=>toast('적군 스프라이트 적용 버전');
 
   $('startGame').onclick=()=>{
     const imgs=Object.values(sheets);
@@ -702,7 +817,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
     });
   };
 
-  setTimeout(draw, 100);
+  resize();
+  setTimeout(draw,100);
 })();
 </script>
 </body>
